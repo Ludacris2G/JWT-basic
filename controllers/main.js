@@ -16,15 +16,26 @@ const login = async (req, res) => {
     const id = new Date().getDate();
 
     // keep payload small for a better experience
-    const token = jwt.sign({ id, username });
+    const token = jwt.sign(
+        { id, username }, 
+        process.env.JWT_SECRET,
+        { expiresIn: '30d' }
+    );
 
-    console.log(username, password);
-    res.send('Fake Login/Register/Signup');
+    res.status(200).json({ msg: 'user created', token });
 };
 
 const dashboard = async (req, res) => {
+    console.log(req.user);
+
     const luckyNumber = Math.floor(Math.random() * 100);
-    res.status(200).json({ msg: `Hello, John Does`, secret: `Here is your authorized data, your lucky number is ${luckyNumber}` });
+
+    res
+        .status(200)
+        .json({ 
+            msg: `Hello, ${req.user.username}`, 
+            secret: `Here is your authorized data, your lucky number is ${luckyNumber}` 
+        });
 };
 
 module.exports = {
